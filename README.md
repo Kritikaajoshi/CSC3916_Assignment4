@@ -17,11 +17,13 @@ Clone the repository and install dependencies:
 
 ## Environment Settings
 
-| Variable | Description | Value |
-|----------|-------------|-------|
-| DB | MongoDB Atlas connection string | mongodb+srv://movieuser:moviepass123@cluster0.shfyhf7.mongodb.net/moviesdb |
-| SECRET_KEY | JWT secret key | supersecretkey999 |
-| PORT | Server port | 8080 |
+Create a .env file in the root directory with the following variables:
+
+| Variable | Description |
+|----------|-------------|
+| DB | MongoDB Atlas connection string |
+| SECRET_KEY | JWT secret key for token signing |
+| PORT | Server port (default: 8080) |
 
 ## API Routes
 
