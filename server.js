@@ -59,23 +59,40 @@ router.post('/signin', async (req, res) => {
 });
 
 // ── MOVIES ──────────────────────────────────────────────
-
 router.route('/movies')
   .get(authJwtController.isAuthenticated, async (req, res) => {
     try {
-      const movies = await Movie.find();
+      const aggregate = [
+        {
+          $lookup: {
+            from: 'reviews',
+            localField: '_id',
+            foreignField: 'movieId',
+            as: 'movieReviews'
+          }
+        },
+        {
+          $addFields: {
+            avgRating: { $avg: '$movieReviews.rating' }
+          }
+        },
+        {
+          $sort: { avgRating: -1 }
+        }
+      ];
+      const movies = await Movie.aggregate(aggregate);
       res.json(movies);
     } catch (err) {
       res.status(500).json({ success: false, message: err.message });
     }
   })
   .post(authJwtController.isAuthenticated, async (req, res) => {
-    const { title, releaseDate, genre, actors } = req.body;
+    const { title, releaseDate, genre, actors, imageUrl } = req.body;
     if (!title || !releaseDate || !genre || !actors || actors.length === 0) {
       return res.status(400).json({ success: false, message: 'All fields including actors are required.' });
     }
     try {
-      const movie = new Movie({ title, releaseDate, genre, actors });
+      const movie = new Movie({ title, releaseDate, genre, actors, imageUrl });
       const saved = await movie.save();
       res.status(201).json(saved);
     } catch (err) {
@@ -92,7 +109,6 @@ router.route('/movies')
 router.route('/movies/:movieparameter')
   .get(authJwtController.isAuthenticated, async (req, res) => {
     try {
-      // If ?reviews=true include reviews using aggregation
       if (req.query.reviews === 'true') {
         const movieWithReviews = await Movie.aggregate([
           { $match: { title: req.params.movieparameter } },
@@ -101,7 +117,12 @@ router.route('/movies/:movieparameter')
               from: 'reviews',
               localField: '_id',
               foreignField: 'movieId',
-              as: 'reviews'
+              as: 'movieReviews'
+            }
+          },
+          {
+            $addFields: {
+              avgRating: { $avg: '$movieReviews.rating' }
             }
           }
         ]);
@@ -110,8 +131,6 @@ router.route('/movies/:movieparameter')
         }
         return res.json(movieWithReviews[0]);
       }
-
-      // Normal request without reviews
       const movie = await Movie.findOne({ title: req.params.movieparameter });
       if (!movie) return res.status(404).json({ success: false, message: 'Movie not found.' });
       res.json(movie);
@@ -143,7 +162,6 @@ router.route('/movies/:movieparameter')
   });
 
 // ── REVIEWS ──────────────────────────────────────────────
-
 router.route('/reviews')
   .get(authJwtController.isAuthenticated, async (req, res) => {
     try {
@@ -155,18 +173,14 @@ router.route('/reviews')
   })
   .post(authJwtController.isAuthenticated, async (req, res) => {
     const { movieId, username, review, rating } = req.body;
-
     if (!movieId || !username || !review || rating === undefined) {
       return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
-
     try {
-      // Check if movie exists
       const movie = await Movie.findById(movieId);
       if (!movie) {
         return res.status(404).json({ success: false, message: 'Movie not found in database.' });
       }
-
       const newReview = new Review({ movieId, username, review, rating });
       await newReview.save();
       res.status(201).json({ message: 'Review created!' });
