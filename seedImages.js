@@ -7,23 +7,23 @@ mongoose.connect(process.env.DB);
 const movieImages = [
   {
     title: 'Inception',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/2/2e/Inception_%282010%29_theatrical_poster.jpg'
+    imageUrl: 'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg'
   },
   {
     title: 'The Dark Knight',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/1/1c/The_Dark_Knight_%282008_film%29.jpg'
+    imageUrl: 'https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg'
   },
   {
     title: 'Titanic',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/1/18/Titanic_%281997_film%29_poster.png'
+    imageUrl: 'https://m.media-amazon.com/images/M/MV5BMDdmZGU3NDQtY2E5My00ZTliLWIzOTUtMTY4ZGI1YjdiNjk3XkEyXkFqcGdeQXVyNTA4NzY1MzY@._V1_SX300.jpg'
   },
   {
     title: 'The Matrix',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/c1/The_Matrix_Poster.jpg'
+    imageUrl: 'https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVlLTM5YTUtZjk4ODhmNGJmNmQxXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg'
   },
   {
     title: 'Interstellar',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg'
+    imageUrl: 'https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_SX300.jpg'
   }
 ];
 
@@ -35,9 +35,9 @@ async function seedImages() {
         { imageUrl: movie.imageUrl },
         { new: true }
       );
-      console.log(`Image added for ${movie.title}`);
+      console.log(`Image updated for ${movie.title}`);
     }
-    console.log('All images added!');
+    console.log('All images updated!');
     mongoose.disconnect();
   } catch (err) {
     console.error(err);
